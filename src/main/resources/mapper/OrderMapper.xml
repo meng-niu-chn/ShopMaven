@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shop.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="shop.bean.Order">
+    <id column="oid" jdbcType="INTEGER" property="oid" />
+    <result column="total" jdbcType="DOUBLE" property="total" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="receiveinfo" jdbcType="VARCHAR" property="receiveinfo" />
+    <result column="phonum" jdbcType="VARCHAR" property="phonum" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="accepter" jdbcType="VARCHAR" property="accepter" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    oid, total, state, receiveinfo, phonum, order_time, uid, accepter
+  </sql>
+
+
+  <!--######################          添加         ##############-->
+
+
+  <sql id="WithSeconds_Base_Column_List">
+    o.oid, o.total, o.state, o.receiveinfo, o.phonum, o.order_time, o.uid,
+    o.accepter, oi.oiid, oi.count, oi.money, oi.pid, oi.oid
+  </sql>
+
+  <resultMap id="WithSeconds_BaseResultMap" type="shop.bean.Order">
+    <id column="oid" jdbcType="INTEGER" property="oid"></id>
+    <result column="total" jdbcType="DOUBLE" property="total"/>
+    <result column="state" jdbcType="INTEGER" property="state"/>
+    <result column="receiveinfo" jdbcType="VARCHAR" property="receiveinfo"/>
+    <result column="phonum" jdbcType="VARCHAR" property="phonum"/>
+    <result column="orderTime" jdbcType="TIMESTAMP" property="order_time"/>
+    <result column="uid" jdbcType="INTEGER" property="uid"/>
+    <result column="accepter" jdbcType="VARCHAR" property="accepter"/>
+    <!--<association property="categorySeconds" javaType="shop.bean.CategorySecond">
+      <id column="csid" javaType="INTEGER" property="csid"></id>
+      <result column="csname" javaType="STRING" property="csname"/>
+      <result column="cid" javaType="INTEGER" property="cid"/>
+    </association>-->
+    <!--<collection property="orderItems" ofType="shop.bean.OtderItem" select="shop.mapper.OrderItemMapper.selectByPrimaryKeyWithProduct" column="oiid">
+    </collection>-->
+    <collection property="orderItems" ofType="shop.bean.OrderItem">
+      <id column="oiid" javaType="INTEGER" property="oiid"/>
+      <result column="count" javaType="INTEGER" property="count"/>
+      <result column="money" javaType="DOUBLE" property="money"/>
+      <result column="money" javaType="DOUBLE" property="money"/>
+      <result column="pid" javaType="INTEGER" property="pid"/>
+      <result column="oid" javaType="INTEGER" property="oid"/>
+      <association property="product" select="shop.mapper.ProductMapper.selectByPrimaryKey" column="pid"/>
+    </collection>
+  </resultMap>
+
+  <select id="selectByExampleWithOI" parameterType="shop.bean.OrderExample" resultMap="WithSeconds_BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="WithSeconds_Base_Column_List" />
+    from myorder o
+    left join orderitem oi on o.oid = oi.oid
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectByPrimaryKeyWithOI" parameterType="java.lang.Integer" resultMap="WithSeconds_BaseResultMap">
+    select
+    <include refid="WithSeconds_Base_Column_List" />
+    from myorder o
+    left join orderitem oi on o.oid = oi.oid
+    where o.oid = #{oid,jdbcType=INTEGER}
+  </select>
+
+
+
+  <!--######################          添加         ##############-->
+
+
+
+
+  <select id="selectByExample" parameterType="shop.bean.OrderExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from myorder
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from myorder
+    where oid = #{oid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from myorder
+    where oid = #{oid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="shop.bean.OrderExample">
+    delete from myorder
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="shop.bean.Order">
+    insert into myorder (oid, total, state, 
+      receiveinfo, phonum, order_time, 
+      uid, accepter)
+    values (#{oid,jdbcType=INTEGER}, #{total,jdbcType=DOUBLE}, #{state,jdbcType=INTEGER}, 
+      #{receiveinfo,jdbcType=VARCHAR}, #{phonum,jdbcType=VARCHAR}, #{orderTime,jdbcType=TIMESTAMP}, 
+      #{uid,jdbcType=INTEGER}, #{accepter,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="shop.bean.Order" useGeneratedKeys="true" keyProperty="oid">
+    insert into myorder
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        oid,
+      </if>
+      <if test="total != null">
+        total,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="receiveinfo != null">
+        receiveinfo,
+      </if>
+      <if test="phonum != null">
+        phonum,
+      </if>
+      <if test="orderTime != null">
+        order_time,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="accepter != null">
+        accepter,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="oid != null">
+        #{oid,jdbcType=INTEGER},
+      </if>
+      <if test="total != null">
+        #{total,jdbcType=DOUBLE},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="receiveinfo != null">
+        #{receiveinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="phonum != null">
+        #{phonum,jdbcType=VARCHAR},
+      </if>
+      <if test="orderTime != null">
+        #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="accepter != null">
+        #{accepter,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="shop.bean.OrderExample" resultType="java.lang.Long">
+    select count(*) from myorder
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update myorder
+    <set>
+      <if test="record.oid != null">
+        oid = #{record.oid,jdbcType=INTEGER},
+      </if>
+      <if test="record.total != null">
+        total = #{record.total,jdbcType=DOUBLE},
+      </if>
+      <if test="record.state != null">
+        state = #{record.state,jdbcType=INTEGER},
+      </if>
+      <if test="record.receiveinfo != null">
+        receiveinfo = #{record.receiveinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phonum != null">
+        phonum = #{record.phonum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orderTime != null">
+        order_time = #{record.orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.uid != null">
+        uid = #{record.uid,jdbcType=INTEGER},
+      </if>
+      <if test="record.accepter != null">
+        accepter = #{record.accepter,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update myorder
+    set oid = #{record.oid,jdbcType=INTEGER},
+      total = #{record.total,jdbcType=DOUBLE},
+      state = #{record.state,jdbcType=INTEGER},
+      receiveinfo = #{record.receiveinfo,jdbcType=VARCHAR},
+      phonum = #{record.phonum,jdbcType=VARCHAR},
+      order_time = #{record.orderTime,jdbcType=TIMESTAMP},
+      uid = #{record.uid,jdbcType=INTEGER},
+      accepter = #{record.accepter,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="shop.bean.Order">
+    update myorder
+    <set>
+      <if test="total != null">
+        total = #{total,jdbcType=DOUBLE},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="receiveinfo != null">
+        receiveinfo = #{receiveinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="phonum != null">
+        phonum = #{phonum,jdbcType=VARCHAR},
+      </if>
+      <if test="orderTime != null">
+        order_time = #{orderTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="accepter != null">
+        accepter = #{accepter,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where oid = #{oid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="shop.bean.Order">
+    update myorder
+    set total = #{total,jdbcType=DOUBLE},
+      state = #{state,jdbcType=INTEGER},
+      receiveinfo = #{receiveinfo,jdbcType=VARCHAR},
+      phonum = #{phonum,jdbcType=VARCHAR},
+      order_time = #{orderTime,jdbcType=TIMESTAMP},
+      uid = #{uid,jdbcType=INTEGER},
+      accepter = #{accepter,jdbcType=VARCHAR}
+    where oid = #{oid,jdbcType=INTEGER}
+  </update>
+</mapper>

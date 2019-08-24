@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shop.mapper.ProductMapper">
+  <resultMap id="BaseResultMap" type="shop.bean.Product">
+    <id column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="pname" jdbcType="VARCHAR" property="pname" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="pdesc" jdbcType="VARCHAR" property="pdesc" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+    <result column="pdate" jdbcType="TIMESTAMP" property="pdate" />
+    <result column="csid" jdbcType="INTEGER" property="csid" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="comid" jdbcType="INTEGER" property="comid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    pid, pname, price, image, pdesc, is_hot, pdate, csid, state, comid
+  </sql>
+
+  <!--###############          添加          ######################-->
+
+
+  <sql id="WithCS_Base_Column_List">
+    cs.csid, cs.csname, cs.cid, p.pid, p.pname, p.price, p.image, p.pdesc, p.is_hot, p.pdate, p.state, p.comid
+  </sql>
+
+  <resultMap id="WithCSBaseResultMap" type="shop.bean.Product">
+    <id column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="pname" jdbcType="VARCHAR" property="pname" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="pdesc" jdbcType="VARCHAR" property="pdesc" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+    <result column="pdate" jdbcType="TIMESTAMP" property="pdate" />
+    <result column="csid" jdbcType="INTEGER" property="csid" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="comid" jdbcType="INTEGER" property="comid" />
+    <!--<association property="categorySecond" javaType="shop.bean.CategorySecond">-->
+      <!--<id column="csid" javaType="INTEGER" property="csid"></id>-->
+      <!--<result column="csname" javaType="STRING" property="csname"/>-->
+      <!--<result column="cid" javaType="INTEGER" property="cid"/>-->
+    <!--</association>-->
+    <association property="categorySecond" javaType="shop.bean.CategorySecond"
+                 column="csid" select="shop.mapper.CategorySecondMapper.selectByPrimaryKeyWithCate" />
+  </resultMap>
+
+  <select id="selectByExampleWithCS" parameterType="shop.bean.ProductExample" resultMap="WithCSBaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="WithCS_Base_Column_List" />
+    from categorysecond cs
+    inner join product p on cs.csid = p.csid
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectByPrimaryKeyWithCS" parameterType="java.lang.Integer" resultMap="WithCSBaseResultMap">
+    select
+    <include refid="WithCS_Base_Column_List" />
+    from categorysecond cs
+    inner join product p on cs.csid = p.csid
+    where csid = #{csid,jdbcType=INTEGER}
+  </select>
+
+
+
+
+  <!--###############          添加          ######################-->
+
+  <select id="selectByExample" parameterType="shop.bean.ProductExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from product
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from product
+    where pid = #{pid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from product
+    where pid = #{pid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="shop.bean.ProductExample">
+    delete from product
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="shop.bean.Product">
+    insert into product (pid, pname, price, 
+      image, pdesc, is_hot, 
+      pdate, csid, state, 
+      comid)
+    values (#{pid,jdbcType=INTEGER}, #{pname,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, 
+      #{image,jdbcType=VARCHAR}, #{pdesc,jdbcType=VARCHAR}, #{isHot,jdbcType=INTEGER}, 
+      #{pdate,jdbcType=TIMESTAMP}, #{csid,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, 
+      #{comid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="shop.bean.Product">
+    insert into product
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="pname != null">
+        pname,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="pdesc != null">
+        pdesc,
+      </if>
+      <if test="isHot != null">
+        is_hot,
+      </if>
+      <if test="pdate != null">
+        pdate,
+      </if>
+      <if test="csid != null">
+        csid,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="comid != null">
+        comid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="pid != null">
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="pname != null">
+        #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="pdesc != null">
+        #{pdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isHot != null">
+        #{isHot,jdbcType=INTEGER},
+      </if>
+      <if test="pdate != null">
+        #{pdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="csid != null">
+        #{csid,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="comid != null">
+        #{comid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="shop.bean.ProductExample" resultType="java.lang.Long">
+    select count(*) from product
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update product
+    <set>
+      <if test="record.pid != null">
+        pid = #{record.pid,jdbcType=INTEGER},
+      </if>
+      <if test="record.pname != null">
+        pname = #{record.pname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.price != null">
+        price = #{record.price,jdbcType=DOUBLE},
+      </if>
+      <if test="record.image != null">
+        image = #{record.image,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pdesc != null">
+        pdesc = #{record.pdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isHot != null">
+        is_hot = #{record.isHot,jdbcType=INTEGER},
+      </if>
+      <if test="record.pdate != null">
+        pdate = #{record.pdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.csid != null">
+        csid = #{record.csid,jdbcType=INTEGER},
+      </if>
+      <if test="record.state != null">
+        state = #{record.state,jdbcType=INTEGER},
+      </if>
+      <if test="record.comid != null">
+        comid = #{record.comid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update product
+    set pid = #{record.pid,jdbcType=INTEGER},
+      pname = #{record.pname,jdbcType=VARCHAR},
+      price = #{record.price,jdbcType=DOUBLE},
+      image = #{record.image,jdbcType=VARCHAR},
+      pdesc = #{record.pdesc,jdbcType=VARCHAR},
+      is_hot = #{record.isHot,jdbcType=INTEGER},
+      pdate = #{record.pdate,jdbcType=TIMESTAMP},
+      csid = #{record.csid,jdbcType=INTEGER},
+      state = #{record.state,jdbcType=INTEGER},
+      comid = #{record.comid,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="shop.bean.Product">
+    update product
+    <set>
+      <if test="pname != null">
+        pname = #{pname,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="pdesc != null">
+        pdesc = #{pdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isHot != null">
+        is_hot = #{isHot,jdbcType=INTEGER},
+      </if>
+      <if test="pdate != null">
+        pdate = #{pdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="csid != null">
+        csid = #{csid,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="comid != null">
+        comid = #{comid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where pid = #{pid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="shop.bean.Product">
+    update product
+    set pname = #{pname,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DOUBLE},
+      image = #{image,jdbcType=VARCHAR},
+      pdesc = #{pdesc,jdbcType=VARCHAR},
+      is_hot = #{isHot,jdbcType=INTEGER},
+      pdate = #{pdate,jdbcType=TIMESTAMP},
+      csid = #{csid,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER},
+      comid = #{comid,jdbcType=INTEGER}
+    where pid = #{pid,jdbcType=INTEGER}
+  </update>
+</mapper>

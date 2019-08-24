@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shop.mapper.CartMapper">
+  <resultMap id="BaseResultMap" type="shop.bean.Cart">
+    <id column="cartid" jdbcType="INTEGER" property="cartid" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="total" jdbcType="DOUBLE" property="total" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    cartid, uid, total
+  </sql>
+
+
+
+
+  <!--######################          添加         ##############-->
+
+
+  <sql id="WithSeconds_Base_Column_List">
+    c.cartid, c.uid, c.total, ci.ciid, ci.pid, ci.pcount, ci.price, ci.money, ci.cartid
+  </sql>
+
+  <resultMap id="WithSeconds_BaseResultMap" type="shop.bean.Cart">
+    <id column="cartid" jdbcType="INTEGER" property="cartid"></id>
+    <result column="uid" jdbcType="INTEGER" property="uid"/>
+    <result column="total" jdbcType="DOUBLE" property="total"/>
+    <collection property="cartItems" ofType="shop.bean.CartItem">
+      <id column="ciid" javaType="INTEGER" property="ciid"/>
+      <result column="pid" javaType="INTEGER" property="pid"/>
+      <result column="pcount" javaType="INTEGER" property="pcount"/>
+      <result column="price" javaType="DOUBLE" property="price"/>
+      <result column="money" javaType="DOUBLE" property="money"/>
+      <result column="cartid" javaType="INTEGER" property="cartid"/>
+      <association property="product" select="shop.mapper.ProductMapper.selectByPrimaryKey" column="pid"/>
+    </collection>
+  </resultMap>
+
+  <select id="selectByExampleWithItems" parameterType="shop.bean.CategorySecondExample" resultMap="WithSeconds_BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="WithSeconds_Base_Column_List" />
+    from cart c
+    left join cartitem ci on c.cartid = ci.cartid
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectByPrimaryKeyWithItems" parameterType="java.lang.Integer" resultMap="WithSeconds_BaseResultMap">
+    select
+    <include refid="WithSeconds_Base_Column_List" />
+    from cart c
+    left join cartitem ci on c.cartid = ci.cartid
+    where c.cartid = #{cartid,jdbcType=INTEGER}
+  </select>
+
+
+
+  <!--######################          添加         ##############-->
+
+
+
+
+
+  <select id="selectByExample" parameterType="shop.bean.CartExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cart
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cart
+    where cartid = #{cartid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cart
+    where cartid = #{cartid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="shop.bean.CartExample">
+    delete from cart
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="shop.bean.Cart">
+    insert into cart (cartid, uid, total
+      )
+    values (#{cartid,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{total,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="shop.bean.Cart">
+    insert into cart
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cartid != null">
+        cartid,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="total != null">
+        total,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cartid != null">
+        #{cartid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="total != null">
+        #{total,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="shop.bean.CartExample" resultType="java.lang.Long">
+    select count(*) from cart
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update cart
+    <set>
+      <if test="record.cartid != null">
+        cartid = #{record.cartid,jdbcType=INTEGER},
+      </if>
+      <if test="record.uid != null">
+        uid = #{record.uid,jdbcType=INTEGER},
+      </if>
+      <if test="record.total != null">
+        total = #{record.total,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update cart
+    set cartid = #{record.cartid,jdbcType=INTEGER},
+      uid = #{record.uid,jdbcType=INTEGER},
+      total = #{record.total,jdbcType=DOUBLE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="shop.bean.Cart">
+    update cart
+    <set>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="total != null">
+        total = #{total,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where cartid = #{cartid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="shop.bean.Cart">
+    update cart
+    set uid = #{uid,jdbcType=INTEGER},
+      total = #{total,jdbcType=DOUBLE}
+    where cartid = #{cartid,jdbcType=INTEGER}
+  </update>
+</mapper>

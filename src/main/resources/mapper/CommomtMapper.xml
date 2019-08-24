@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shop.mapper.CommomtMapper">
+  <resultMap id="BaseResultMap" type="shop.bean.Commomt">
+    <id column="comid" jdbcType="INTEGER" property="comid" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="recomid" jdbcType="INTEGER" property="recomid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    comid, content, uid, recomid
+  </sql>
+  <select id="selectByExample" parameterType="shop.bean.CommomtExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from commont
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from commont
+    where comid = #{comid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from commont
+    where comid = #{comid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="shop.bean.CommomtExample">
+    delete from commont
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="shop.bean.Commomt">
+    insert into commont (comid, content, uid, 
+      recomid)
+    values (#{comid,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}, #{uid,jdbcType=INTEGER}, 
+      #{recomid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="shop.bean.Commomt">
+    insert into commont
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="comid != null">
+        comid,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="recomid != null">
+        recomid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="comid != null">
+        #{comid,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="recomid != null">
+        #{recomid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="shop.bean.CommomtExample" resultType="java.lang.Long">
+    select count(*) from commont
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update commont
+    <set>
+      <if test="record.comid != null">
+        comid = #{record.comid,jdbcType=INTEGER}，
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.uid != null">
+        uid = #{record.uid,jdbcType=INTEGER},
+      </if>
+      <if test="record.recomid != null">
+        recomid = #{record.recomid,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update commont
+    set comid = #{record.comid,jdbcType=INTEGER},
+      content = #{record.content,jdbcType=VARCHAR},
+      uid = #{record.uid,jdbcType=INTEGER},
+      recomid = #{record.recomid,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="shop.bean.Commomt">
+    update commont
+    <set>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="recomid != null">
+        recomid = #{recomid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where comid = #{comid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="shop.bean.Commomt">
+    update commont
+    set content = #{content,jdbcType=VARCHAR},
+      uid = #{uid,jdbcType=INTEGER},
+      recomid = #{recomid,jdbcType=INTEGER}
+    where comid = #{comid,jdbcType=INTEGER}
+  </update>
+</mapper>
